@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <div class="wrapper"></div>
+  <script>
+    // 在实现结构复用里，你会发现，按钮是死的，你点击他不会有反应。LinkButton的button是在字符串里的，DOM事件的API只有DOM结构才能用。
+    // 我们需要DOM结构，我们需要这个点赞功能的HTML字符串表示的DOM结构。
+
+    // ::String => ::Document
+    const createDOMFromString = (domString) => {
+      const div = document.createElement('div')
+      div.innerHTML = domString
+      return div
+    }
+
+    class LinkButton {
+      constructor () {
+        this.state = { isLiked: false }
+      }
+
+      changeLikeText () {
+        console.log(this);
+        const likeText = this.el.querySelector('.like-text')
+        this.state.isLiked = !this.state.isLiked
+        likeText.innerHTML = this.state.isLiked ? '取消' : '点赞'
+      }
+
+      render() {
+        this.el = createDOMFromString(
+          `
+        <button class='like-button'>
+          <span class='like-text'>点赞</span>
+          <span>👍</span>
+        </button>
+        `
+        )
+        //如果不用bind，此处的this传入的为el这个div，所以this.el会失效..使用bind重新绑定this
+        this.el.addEventListener('click', this.changeLikeText.bind(this), false)
+        return this.el
+      }
+    }
+
+    const wrapper = document.querySelector('.wrapper')
+
+    const likeButton1 = new LinkButton()
+    wrapper.appendChild(likeButton1.render())
+
+    const likeButton2 = new LinkButton()
+    wrapper.appendChild(likeButton2.render())
+  </script>
+</body>
+
+</html>
